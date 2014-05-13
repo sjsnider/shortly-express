@@ -11,6 +11,10 @@ var Click = require('./app/models/click');
 
 var app = express();
 
+app.use(express.bodyParser());                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+app.use(express.cookieParser('shhhh, very secret')); 
+app.use(express.session());
+
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
@@ -20,17 +24,51 @@ app.configure(function() {
 });
 
 app.get('/', function(req, res) {
-  res.render('index');
+  var checkUser = false;
+  if(checkUser){
+    res.render('index');
+  } else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/login', function(req, res) {
+  res.render('login');
 });
 
 app.get('/create', function(req, res) {
-  res.render('index');
+  var checkUser = false;
+  if(checkUser){
+    res.render('create');
+  } else {
+   res.redirect('/login');
+  }
 });
 
 app.get('/links', function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
-  })
+  var checkUser = false;
+  if(checkUser){
+    Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
+    })
+  } else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  util.signUpUser(username,password, res, req);  
+});
+
+app.post('/login', function(req, res){
+  var username = req.body.username;
+  var password = req.body.password; 
 });
 
 app.post('/links', function(req, res) {
