@@ -24,8 +24,7 @@ app.configure(function() {
 });
 
 app.get('/', function(req, res) {
-  var checkUser = false;
-  if(checkUser){
+  if(req.session.user){
     res.render('index');
   } else {
     res.redirect('/login');
@@ -36,9 +35,18 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
+app.get('/logout', function(req, res) {
+  if(req.session.user){
+    req.session.destroy(function(){
+      res.render('login');
+    }); 
+  } else{
+    res.render('login');
+  }
+});
+
 app.get('/create', function(req, res) {
-  var checkUser = false;
-  if(checkUser){
+  if(req.session.user){
     res.render('create');
   } else {
    res.redirect('/login');
@@ -46,11 +54,10 @@ app.get('/create', function(req, res) {
 });
 
 app.get('/links', function(req, res) {
-  var checkUser = false;
-  if(checkUser){
+  if(req.session.user){
     Links.reset().fetch().then(function(links) {
       res.send(200, links.models);
-    })
+    });
   } else {
     res.redirect('/login');
   }
@@ -69,6 +76,17 @@ app.post('/signup', function(req, res) {
 app.post('/login', function(req, res){
   var username = req.body.username;
   var password = req.body.password; 
+  util.checkUser(username, password, function(err, exists){
+    if (exists){
+      req.session.regenerate(function(){
+        req.session.user = username;
+        res.redirect('/');
+      });
+    } else {
+      // wasn't authenticated, back to log in page, should display message
+      res.render('login');
+    }
+  });
 });
 
 app.post('/links', function(req, res) {

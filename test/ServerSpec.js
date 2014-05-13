@@ -13,14 +13,14 @@ var Link = require('../app/models/link');
 // Swap the commented lines or remove the 'x' from beforeEach
 // when working on authentication tests.
 /************************************************************/
-//var xbeforeEach = beforeEach;
-var xbeforeEach = function(){};
+var xbeforeEach = beforeEach;
+// var xbeforeEach = function(){};
 /************************************************************/
 
 
 describe('', function() {
 
-  beforeEach(function() {
+  xbeforeEach(function() {
     // log out currently signed in user
     request('http://127.0.0.1:4568/logout', function(error, res, body) {});
 
@@ -41,10 +41,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
 
     // delete user Phillip from db so it can be created later for the test
@@ -53,10 +53,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
   });
 
@@ -64,29 +64,29 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(done){
-      // create a user that we can then log-in with
-      new User({
-          'username': 'Phillip',
-          'password': 'Phillip'
-      }).save().then(function(){
-        var options = {
-          'method': 'POST',
-          'followAllRedirects': true,
-          'uri': 'http://127.0.0.1:4568/login',
-          'json': {
-            'username': 'Phillip',
-            'password': 'Phillip'
-          }
-        };
-        // login via form and save session info
-        requestWithSession(options, function(error, res, body) {
-          done();
-        });
-      });
-    });
+    // xbeforeEach(function(done){
+    //   // create a user that we can then log-in with
+    //   new User({
+    //       'username': 'Phillip',
+    //       'password': 'Phillip'
+    //   }).save().then(function(){
+    //     var options = {
+    //       'method': 'POST',
+    //       'followAllRedirects': true,
+    //       'uri': 'http://127.0.0.1:4568/login',
+    //       'json': {
+    //         'username': 'Phillip',
+    //         'password': 'Phillip'
+    //       }
+    //     };
+    //     // login via form and save session info
+    //     requestWithSession(options, function(error, res, body) {
+    //       done();
+    //     });
+    //   });
+    // });
 
-    it('Only shortens valid urls, returning a 404 - Not found for invalid urls', function(done) {
+    xit('Only shortens valid urls, returning a 404 - Not found for invalid urls', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:4568/links',
@@ -112,7 +112,7 @@ describe('', function() {
         }
       };
 
-      it('Responds with the short code', function(done) {
+      xit('Responds with the short code', function(done) {
         requestWithSession(options, function(error, res, body) {
           expect(res.body.url).to.equal('http://www.roflzoo.com/');
           expect(res.body.code).to.not.be.null;
@@ -120,7 +120,7 @@ describe('', function() {
         });
       });
 
-      it('New links create a database entry', function(done) {
+      xit('New links create a database entry', function(done) {
         requestWithSession(options, function(error, res, body) {
           db.knex('urls')
             .where('url', '=', 'http://www.roflzoo.com/')
@@ -134,7 +134,7 @@ describe('', function() {
         });
       });
 
-      it('Fetches the link url title', function (done) {
+      xit('Fetches the link url title', function (done) {
         requestWithSession(options, function(error, res, body) {
           db.knex('urls')
             .where('title', '=', 'Rofl Zoo - Daily funny animal pictures')
@@ -166,7 +166,7 @@ describe('', function() {
         });
       });
 
-      it('Returns the same shortened code', function(done) {
+      xit('Returns the same shortened code', function(done) {
         var options = {
           'method': 'POST',
           'followAllRedirects': true,
@@ -183,7 +183,7 @@ describe('', function() {
         });
       });
 
-      it('Shortcode redirects to correct url', function(done) {
+      xit('Shortcode redirects to correct url', function(done) {
         var options = {
           'method': 'GET',
           'uri': 'http://127.0.0.1:4568/' + link.get('code')
@@ -196,7 +196,7 @@ describe('', function() {
         });
       });
 
-      it('Returns all of the links to display on the links page', function(done) {
+      xit('Returns all of the links to display on the links page', function(done) {
         var options = {
           'method': 'GET',
           'uri': 'http://127.0.0.1:4568/links'
